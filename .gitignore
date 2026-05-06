@@ -1,0 +1,6 @@
+node_modules/
+data/wa-auth/
+data/receipts/
+data/db.json
+.env
+*.log

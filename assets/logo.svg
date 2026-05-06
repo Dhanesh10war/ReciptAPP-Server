@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="white"/>
+  
+  <!-- Network Icon -->
+  <g transform="translate(200, 150) scale(0.8)">
+    <path d="M-100,-100 L100,100 M-100,100 L100,-100" stroke="black" stroke-width="24" stroke-linecap="round"/>
+    
+    <!-- Outer nodes (black) -->
+    <circle cx="-100" cy="-100" r="28" fill="black"/>
+    <circle cx="100" cy="100" r="28" fill="black"/>
+    <circle cx="-100" cy="100" r="28" fill="black"/>
+    <circle cx="100" cy="-100" r="28" fill="black"/>
+    
+    <!-- Inner nodes (blue) -->
+    <circle cx="0" cy="-80" r="24" fill="#00a1ff"/>
+    <circle cx="0" cy="80" r="24" fill="#00a1ff"/>
+    <circle cx="-80" cy="0" r="24" fill="#00a1ff"/>
+    <circle cx="80" cy="0" r="24" fill="#00a1ff"/>
+    
+    <!-- Center node -->
+    <circle cx="0" cy="0" r="32" fill="black"/>
+  </g>
+  
+  <!-- JCOM Text -->
+  <text x="200" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="70">
+    <tspan fill="black">J</tspan><tspan fill="#00a1ff">COM</tspan>
+  </text>
+  
+  <!-- Hashtag -->
+  <text x="200" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="18" fill="black" letter-spacing="4">
+    #LETUSCONNECT4BUSINESS
+  </text>
+</svg>
