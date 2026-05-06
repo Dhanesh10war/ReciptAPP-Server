@@ -5,19 +5,30 @@ import { fileURLToPath } from "node:url";
 import { normalizePhone } from "../whatsapp.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const logoPath = path.join(process.cwd(), "assets", "logo.png");
+const logoPath = path.resolve(__dirname, "..", "assets", "logo.png");
+const signaturePath = path.resolve(__dirname, "..", "assets", "signature.png");
 let logoBase64 = "";
+let signatureBase64 = "";
 
 try {
   if (fs.existsSync(logoPath)) {
     const logoBuffer = fs.readFileSync(logoPath);
     logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
-    console.log(`[Receipt] Logo loaded successfully from ${logoPath}`);
+    console.log(`[Receipt] Logo loaded successfully from: ${logoPath}`);
   } else {
-    console.warn(`[Receipt] Logo file not found at ${logoPath}`);
+    console.warn(`[Receipt] Logo NOT FOUND at: ${logoPath}`);
+  }
+
+  if (fs.existsSync(signaturePath)) {
+    const sigBuffer = fs.readFileSync(signaturePath);
+    // Use a more generic mime type if possible, or just stay with png for now
+    signatureBase64 = `data:image/png;base64,${sigBuffer.toString("base64")}`;
+    console.log(`[Receipt] Signature loaded successfully from: ${signaturePath}`);
+  } else {
+    console.warn(`[Receipt] Signature NOT FOUND at: ${signaturePath}`);
   }
 } catch (error) {
-  console.error("[Receipt] Failed to read logo image:", error);
+  console.error("[Receipt] Error loading images:", error.message);
 }
 
 export function sanitize(value = "") {
@@ -88,6 +99,34 @@ export function receiptSvg(receipt) {
   const receiptNumber = sanitize(receipt.receiptNumber);
   const displayDate = sanitize(formatDisplayDate(receipt.date));
 
+  // Load signature dynamically with multiple path fallbacks for Production
+  let dynamicSignatureBase64 = "";
+  try {
+    const possiblePaths = [
+      path.resolve(__dirname, "..", "assets", "signature.png"),
+      path.join(process.cwd(), "assets", "signature.png"),
+      path.join(process.cwd(), "server", "assets", "signature.png")
+    ];
+    
+    let sigPath = "";
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) {
+        sigPath = p;
+        break;
+      }
+    }
+
+    if (sigPath) {
+      const sigBuffer = fs.readFileSync(sigPath);
+      dynamicSignatureBase64 = `data:image/png;base64,${sigBuffer.toString("base64")}`;
+      console.log(`[Receipt] Successfully read signature from: ${sigPath}`);
+    } else {
+      console.warn(`[Receipt] Signature file NOT FOUND in any expected location.`);
+    }
+  } catch (err) {
+    console.error("[Receipt] Error reading signature dynamically:", err.message);
+  }
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760">
   <rect width="1400" height="760" fill="#f7f9f8"/>
@@ -132,6 +171,7 @@ export function receiptSvg(receipt) {
   <text x="238" y="625" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#b8322b">${amount}</text>
 
   <line x1="966" y1="620" x2="1288" y2="620" stroke="#202723" stroke-width="3"/>
+  ${dynamicSignatureBase64 ? `<image x="1007" y="520" width="240" height="110" href="${dynamicSignatureBase64}" preserveAspectRatio="xMidYMid meet"/>` : ""}
   <text x="1127" y="660" text-anchor="middle" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#202723">Treasurer</text>
 </svg>`;
 }
