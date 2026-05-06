@@ -129,6 +129,14 @@ export function receiptSvg(receipt) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760">
+  <defs>
+    <filter id="remove-bg">
+      <feColorMatrix type="matrix" values="1 0 0 0 0
+                                           0 1 0 0 0
+                                           0 0 1 0 0
+                                           -1.1 -1.1 -1.1 1 3"/>
+    </filter>
+  </defs>
   <rect width="1400" height="760" fill="#f7f9f8"/>
   <rect x="44" y="42" width="1312" height="676" rx="8" fill="#ffffff" stroke="#202723" stroke-width="4"/>
   
@@ -171,7 +179,7 @@ export function receiptSvg(receipt) {
   <text x="238" y="625" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#b8322b">${amount}</text>
 
   <line x1="966" y1="620" x2="1288" y2="620" stroke="#202723" stroke-width="3"/>
-  ${dynamicSignatureBase64 ? `<image x="1007" y="520" width="240" height="110" href="${dynamicSignatureBase64}" preserveAspectRatio="xMidYMid meet"/>` : ""}
+  ${dynamicSignatureBase64 ? `<image x="1000" y="525" width="280" height="130" href="${dynamicSignatureBase64}" preserveAspectRatio="xMidYMid meet" filter="url(#remove-bg)"/>` : ""}
   <text x="1127" y="660" text-anchor="middle" font-family="Arial, sans-serif" font-size="27" font-weight="700" fill="#202723">Treasurer</text>
 </svg>`;
 }
